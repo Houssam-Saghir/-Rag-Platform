@@ -10,10 +10,10 @@ public class CurrentUserService(IHttpContextAccessor accessor) : ICurrentUserSer
     {
         get
         {
-            var value = accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var value = accessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return Guid.TryParse(value, out var id) ? id : null;
         }
     }
 
-    public string? UserEmail => accessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email);
+    public string? UserEmail => accessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
 }
