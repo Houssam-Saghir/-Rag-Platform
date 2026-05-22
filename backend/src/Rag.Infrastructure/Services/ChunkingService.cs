@@ -27,6 +27,8 @@ public partial class ChunkingService : IChunkingService
     private static readonly Regex CrossRefRegex = CrossReferenceRegex();
     private static readonly Regex PageBreakRegex = PageBreakPattern();
 
+    private static readonly Regex NumericPattern = NumericCheckRegex();
+
     public IReadOnlyCollection<LegalChunkResult> ChunkText(string text, int chunkSize, int overlap)
     {
         var sections = SplitIntoLegalSections(text);
@@ -60,7 +62,7 @@ public partial class ChunkingService : IChunkingService
                 var heading = match.Groups.Count > 2 && match.Groups[2].Success ? match.Groups[2].Value.Trim() : null;
 
                 // If number is the only capture and looks like a heading, use it as heading
-                if (heading == null && number != null && !Regex.IsMatch(number, @"^[\d.]+$"))
+                if (heading == null && number != null && !NumericPattern.IsMatch(number))
                 {
                     heading = number;
                     number = null;
@@ -281,6 +283,19 @@ public partial class ChunkingService : IChunkingService
     [GeneratedRegex(@"(?<=[.!?])\s+")]
     private static partial Regex SentenceRegex();
 
+    [GeneratedRegex(@"^[\d.]+$")]
+    private static partial Regex NumericCheckRegex();
+
+    /// <summary>
+    /// Represents a detected legal section within a document, including its structural metadata.
+    /// </summary>
+    /// <param name="Text">The full text content of the section.</param>
+    /// <param name="Type">The classified legal section type (Article, Clause, etc.).</param>
+    /// <param name="Number">The section number as found in the document (e.g., "1.1", "IV").</param>
+    /// <param name="Heading">The section heading or title text.</param>
+    /// <param name="PageNumber">The page number where this section begins, if detectable.</param>
+    /// <param name="CrossReferences">Semicolon-delimited cross-references to other sections found in the text.</param>
+    /// <param name="IsAmendment">True if this section is an amendment or contains amendment language.</param>
     private record LegalSection(
         string Text,
         LegalSectionType Type,
