@@ -41,7 +41,9 @@ public class DocumentService(
         => await dbContext.Documents
             .Where(x => x.UploadedByUserId == userId)
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new DocumentDto(x.Id, x.OriginalFileName, x.FileType, x.Status, x.CreatedAt, x.FileSizeBytes))
+            .Select(x => new DocumentDto(x.Id, x.OriginalFileName, x.FileType, x.Status, x.CreatedAt, x.FileSizeBytes,
+                x.LegalDocumentType, x.Jurisdiction, x.PracticeArea, x.CaseNumber, x.MatterNumber,
+                x.EffectiveDate, x.ExpirationDate, x.CurrentVersion))
             .ToListAsync(ct);
 
     public async Task<DocumentDto> GetByIdAsync(Guid userId, Guid documentId, CancellationToken ct = default)
@@ -49,7 +51,9 @@ public class DocumentService(
         var item = await dbContext.Documents.FirstOrDefaultAsync(x => x.Id == documentId && x.UploadedByUserId == userId, ct)
             ?? throw new NotFoundException("Document not found");
 
-        return new DocumentDto(item.Id, item.OriginalFileName, item.FileType, item.Status, item.CreatedAt, item.FileSizeBytes);
+        return new DocumentDto(item.Id, item.OriginalFileName, item.FileType, item.Status, item.CreatedAt, item.FileSizeBytes,
+            item.LegalDocumentType, item.Jurisdiction, item.PracticeArea, item.CaseNumber, item.MatterNumber,
+            item.EffectiveDate, item.ExpirationDate, item.CurrentVersion);
     }
 
     public async Task DeleteAsync(Guid userId, Guid documentId, CancellationToken ct = default)

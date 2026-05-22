@@ -16,4 +16,18 @@ public class Document : BaseAuditableEntity, ISoftDelete
     public ICollection<DocumentChunk> Chunks { get; set; } = new List<DocumentChunk>();
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
+
+    // Law-specific metadata
+    public LegalDocumentType LegalDocumentType { get; set; } = LegalDocumentType.Unknown;
+    public string? Jurisdiction { get; set; }
+    public string? PracticeArea { get; set; }
+    public string? CaseNumber { get; set; }
+    public string? MatterNumber { get; set; }
+    public DateTime? EffectiveDate { get; set; }
+    public DateTime? ExpirationDate { get; set; }
+    public string? Parties { get; set; }
+
+    // Versioning
+    public int CurrentVersion { get; set; } = 1;
+    public ICollection<DocumentVersion> Versions { get; set; } = new List<DocumentVersion>();
 }
